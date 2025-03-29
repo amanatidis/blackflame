@@ -6,6 +6,7 @@ import ProductDetailScreen from '../screens/ProductDetailScreen';
 import LoginScreen from '../screens/LoginScreen';
 import { useAuth } from '../context/AuthContext';
 import { ActivityIndicator, View } from 'react-native';
+import Header from '../components/Header';
 
 export type RootStackParamList = {
   Login: undefined;
@@ -38,28 +39,26 @@ const AppNavigator = () => {
           headerTitleStyle: {
             fontWeight: 'bold',
           },
+          header: ({ route, options }) => (
+            <Header title={options.title || route.name} />
+          ),
         }}
       >
-        {!user ? (
-          <Stack.Screen
-            name="Login"
-            component={LoginScreen}
-            options={{ headerShown: false }}
-          />
-        ) : (
-          <>
-            <Stack.Screen
-              name="Home"
-              component={HomeScreen}
-              options={{ title: 'Price Tracker' }}
-            />
-            <Stack.Screen
-              name="ProductDetail"
-              component={ProductDetailScreen}
-              options={{ title: 'Product Details' }}
-            />
-          </>
-        )}
+        <Stack.Screen
+          name="Login"
+          component={LoginScreen}
+          options={{ headerShown: true, title: 'Welcome' }}
+        />
+        <Stack.Screen
+          name="Home"
+          component={HomeScreen}
+          options={{ title: 'Price Tracker' }}
+        />
+        <Stack.Screen
+          name="ProductDetail"
+          component={ProductDetailScreen}
+          options={{ title: 'Product Details' }}
+        />
       </Stack.Navigator>
     </NavigationContainer>
   );
