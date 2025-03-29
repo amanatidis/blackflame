@@ -4,7 +4,7 @@ import { Platform } from 'react-native';
 export const APP_CONFIG = {
   name: 'Sunlight',
   scheme: Platform.select({
-    web: 'http://localhost:8081',
+    web: 'http://127.0.0.1:8081',
     default: 'sunlight'
   }),
   version: '1.0.0',
@@ -21,7 +21,7 @@ export const OAUTH_CONFIG = {
 
 // API configuration
 export const API_CONFIG = {
-  baseUrl: process.env.EXPO_PUBLIC_API_BASE_URL || 'http://localhost:3000',
+  baseUrl: process.env.EXPO_PUBLIC_API_BASE_URL || 'http://127.0.0.1:3000',
   timeout: 10000, // 10 seconds
 };
 

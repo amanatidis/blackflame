@@ -1,5 +1,5 @@
 import React from 'react';
-import { View, TouchableOpacity, StyleSheet } from 'react-native';
+import { View, TouchableOpacity, StyleSheet, Image } from 'react-native';
 import { Text } from 'react-native';
 import { useAuth } from '../context/AuthContext';
 import { Ionicons } from '@expo/vector-icons';
@@ -16,13 +16,20 @@ const Header: React.FC<HeaderProps> = ({ title }) => {
       <Text style={styles.title}>{title}</Text>
       <TouchableOpacity
         onPress={user ? signOut : signIn}
-        style={styles.authButton}
+        style={[styles.authButton, { pointerEvents: 'auto' }]}
       >
-        <Ionicons
-          name={user ? 'log-out-outline' : 'logo-google'}
-          size={24}
-          color="#fff"
-        />
+        {user?.picture ? (
+          <Image
+            source={{ uri: user.picture }}
+            style={styles.profilePicture}
+          />
+        ) : (
+          <Ionicons
+            name={user ? 'log-out-outline' : 'logo-google'}
+            size={24}
+            color="#fff"
+          />
+        )}
       </TouchableOpacity>
     </View>
   );
@@ -43,6 +50,11 @@ const styles = StyleSheet.create({
   },
   authButton: {
     padding: 8,
+  },
+  profilePicture: {
+    width: 32,
+    height: 32,
+    borderRadius: 16,
   },
 });
 

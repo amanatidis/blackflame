@@ -6,10 +6,9 @@ import { makeRedirectUri } from 'expo-auth-session';
 import { Platform } from 'react-native';
 import { OAUTH_CONFIG, APP_CONFIG } from '../config/config';
 
-// Only use WebBrowser on native platforms
-if (Platform.OS !== 'web') {
-  WebBrowser.maybeCompleteAuthSession();
-}
+
+WebBrowser.maybeCompleteAuthSession();
+
 
 interface AuthContextType {
   user: any | null;
@@ -78,21 +77,20 @@ export const AuthProvider: React.FC<{ children: React.ReactNode }> = ({ children
 
   const signIn = async () => {
     try {
-      if (Platform.OS === 'web') {
-        // For web, use the redirect-based approach
-        const result = await promptAsync();
-        if (result?.type === 'success') {
-          await handleSignInSuccess(result.authentication?.accessToken);
-        }
-      } else {
-        // For native platforms, we'll use the WebBrowser
-        const result = await promptAsync();
-        if (result?.type === 'success') {
-          await handleSignInSuccess(result.authentication?.accessToken);
+      const result = await promptAsync();
+      if (result?.type === 'success') {
+        await handleSignInSuccess(result.authentication?.accessToken);
+        // Ensure the WebBrowser session is completed
+        if (Platform.OS !== 'web') {
+          await WebBrowser.dismissAuthSession();
         }
       }
     } catch (error) {
       console.error('Error signing in:', error);
+      // Ensure the WebBrowser session is dismissed even if there's an error
+      if (Platform.OS !== 'web') {
+        await WebBrowser.dismissAuthSession();
+      }
     }
   };
 

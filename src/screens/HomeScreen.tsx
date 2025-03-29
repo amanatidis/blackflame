@@ -7,14 +7,20 @@ import {
   TouchableOpacity,
   Image,
   Dimensions,
+  Platform,
 } from 'react-native';
 import { Category, Product } from '../types';
 import { getCategories } from '../services/mockData';
+import { useAuth } from '../context/AuthContext';
+import { Header, Icon } from 'react-native-elements';
 
 const { width } = Dimensions.get('window');
 
 const ProductCard = ({ product, onPress }: { product: Product; onPress: () => void }) => (
-  <TouchableOpacity style={styles.productCard} onPress={onPress}>
+  <TouchableOpacity 
+    style={[styles.productCard, { pointerEvents: 'auto' }]} 
+    onPress={onPress}
+  >
     <Image source={{ uri: product.imageUrl }} style={styles.productImage} />
     <View style={styles.productInfo}>
       <Text style={styles.productName}>{product.name}</Text>
@@ -41,6 +47,7 @@ const CategorySection = ({ category, onProductPress }: { category: Category; onP
 
 const HomeScreen = ({ navigation }: any) => {
   const [categories, setCategories] = useState<Category[]>([]);
+  const { user } = useAuth();
 
   useEffect(() => {
     const loadCategories = async () => {
@@ -55,22 +62,38 @@ const HomeScreen = ({ navigation }: any) => {
   };
 
   return (
-    <ScrollView style={styles.container}>
-      {categories.map((category) => (
-        <CategorySection
-          key={category.id}
-          category={category}
-          onProductPress={handleProductPress}
-        />
-      ))}
-    </ScrollView>
+    <View style={{ flex: 1 }}>
+      <ScrollView style={styles.container}>
+        <View style={styles.welcomeSection}>
+          <Text style={styles.welcomeText}>
+            Welcome{user?.name ? `, ${user.name}` : ''}!
+          </Text>
+        </View>
+        {categories.map((category) => (
+          <CategorySection
+            key={category.id}
+            category={category}
+            onProductPress={handleProductPress}
+          />
+        ))}
+      </ScrollView>
+    </View>
   );
 };
 
 const styles = StyleSheet.create({
   container: {
     flex: 1,
+    backgroundColor: '#fff',
+  },
+  welcomeSection: {
+    padding: 16,
     backgroundColor: '#f5f5f5',
+  },
+  welcomeText: {
+    fontSize: 24,
+    fontWeight: 'bold',
+    color: '#333',
   },
   categorySection: {
     marginVertical: 16,
@@ -82,18 +105,13 @@ const styles = StyleSheet.create({
     marginBottom: 12,
   },
   productCard: {
-    width: width * 0.7,
+    width: 256,
     backgroundColor: 'white',
     borderRadius: 12,
     marginHorizontal: 8,
-    shadowColor: '#000',
-    shadowOffset: { width: 0, height: 2 },
-    shadowOpacity: 0.1,
-    shadowRadius: 4,
-    elevation: 3,
   },
   productImage: {
-    width: '100%',
+    width: 256,
     height: 200,
     borderTopLeftRadius: 12,
     borderTopRightRadius: 12,
