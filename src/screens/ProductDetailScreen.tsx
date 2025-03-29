@@ -35,7 +35,7 @@ const ProductDetailScreen = ({ route }: any) => {
       <View style={styles.content}>
         <Text style={styles.name}>{product.name}</Text>
         <Text style={styles.brand}>{product.currentBrand}</Text>
-        <Text style={styles.price}>${product.currentPrice.toFixed(2)}</Text>
+        <Text style={styles.price}>€{product.currentPrice.toFixed(2)}</Text>
         
         <Text style={styles.description}>{product.description}</Text>
         

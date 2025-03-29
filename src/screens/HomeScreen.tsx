@@ -18,7 +18,7 @@ const ProductCard = ({ product, onPress }: { product: Product; onPress: () => vo
     <Image source={{ uri: product.imageUrl }} style={styles.productImage} />
     <View style={styles.productInfo}>
       <Text style={styles.productName}>{product.name}</Text>
-      <Text style={styles.productPrice}>${product.currentPrice.toFixed(2)}</Text>
+      <Text style={styles.productPrice}>€{product.currentPrice.toFixed(2)}</Text>
       <Text style={styles.productBrand}>{product.currentBrand}</Text>
     </View>
   </TouchableOpacity>
