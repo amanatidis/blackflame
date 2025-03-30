@@ -11,6 +11,7 @@ import {
 } from 'react-native';
 import { LineChart } from 'react-native-chart-kit';
 import { Product } from '../types';
+import ProductTag from '../components/ProductTag';
 
 const { width } = Dimensions.get('window');
 
@@ -32,15 +33,18 @@ const ProductDetailScreen = ({ route, navigation }: any) => {
 
   return (
     <ScrollView style={styles.container}>
-      <TouchableOpacity onPress={() => navigation.goBack()} style={styles.backButton}>
-        <Text style={styles.backButtonText}>Back</Text>
-      </TouchableOpacity>
       <Image source={{ uri: product.imageUrl }} style={styles.image} />
       
       <View style={styles.content}>
         <Text style={styles.name}>{product.name}</Text>
         <Text style={styles.brand}>{product.currentBrand}</Text>
         <Text style={styles.price}>€{product.currentPrice.toFixed(2)}</Text>
+        
+        <View style={styles.tagsContainer}>
+          {product.tags?.map((tag, index) => (
+            <ProductTag key={index} text={tag} />
+          ))}
+        </View>
         
         <Text style={styles.description}>{product.description}</Text>
         
@@ -75,8 +79,8 @@ const styles = StyleSheet.create({
     backgroundColor: '#f5f5f5',
   },
   image: {
-    width: '80%',
-    height: 200,
+    width: 128,
+    height: 128,
     alignSelf: 'center',
   },
   content: {
@@ -137,6 +141,11 @@ const styles = StyleSheet.create({
     color: '#fff',
     fontSize: 16,
     textAlign: 'center',
+  },
+  tagsContainer: {
+    flexDirection: 'row',
+    flexWrap: 'wrap',
+    marginBottom: 16,
   },
 });
 

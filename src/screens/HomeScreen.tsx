@@ -6,15 +6,11 @@ import {
   ScrollView,
   TouchableOpacity,
   Image,
-  Dimensions,
-  Platform,
 } from 'react-native';
 import { Category, Product } from '../types';
 import { getCategories } from '../services/mockData';
 import { useAuth } from '../context/AuthContext';
-import { Header, Icon } from 'react-native-elements';
-
-const { width } = Dimensions.get('window');
+import ProductTag from '../components/ProductTag';
 
 const ProductCard = ({ product, onPress }: { product: Product; onPress: () => void }) => (
   <TouchableOpacity 
@@ -26,6 +22,11 @@ const ProductCard = ({ product, onPress }: { product: Product; onPress: () => vo
       <Text style={styles.productName}>{product.name}</Text>
       <Text style={styles.productPrice}>€{product.currentPrice.toFixed(2)}</Text>
       <Text style={styles.productBrand}>{product.currentBrand}</Text>
+      <View style={styles.tagsContainer}>
+        {product.tags?.slice(0, 2).map((tag, index) => (
+          <ProductTag key={index} text={tag} />
+        ))}
+      </View>
     </View>
   </TouchableOpacity>
 );
@@ -111,8 +112,8 @@ const styles = StyleSheet.create({
     marginHorizontal: 8,
   },
   productImage: {
-    width: 256,
-    height: 200,
+    width: 128,
+    height: 128,
     borderTopLeftRadius: 12,
     borderTopRightRadius: 12,
   },
@@ -133,6 +134,11 @@ const styles = StyleSheet.create({
     fontSize: 14,
     color: '#666',
     marginTop: 4,
+  },
+  tagsContainer: {
+    flexDirection: 'row',
+    flexWrap: 'wrap',
+    marginTop: 8,
   },
 });
 

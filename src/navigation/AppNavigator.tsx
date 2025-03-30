@@ -31,7 +31,7 @@ const AppNavigator = () => {
     ...DefaultTheme,
     colors: {
       ...DefaultTheme.colors,
-      background: 'transparent',
+      // background: 'transparent',
     },
   };
 
@@ -65,7 +65,11 @@ const AppNavigator = () => {
         <Stack.Screen
           name="ProductDetail"
           component={ProductDetailScreen}
-          options={{ title: 'Product Details' }}
+          options={{ 
+            title: 'Product Details',
+            headerShown: true,
+            headerBackTitle: 'Back'
+          }}
         />
       </Stack.Navigator>
     </NavigationContainer>

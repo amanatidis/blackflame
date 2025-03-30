@@ -28,10 +28,11 @@ export const getProductsFromApi = async (): Promise<Product[]> => {
       name: product.name,
       description: product.description,
       category: product.category[0],
-      imageUrl: product.image,
+      imageUrl: `http://127.0.0.1:3000/images/${product.id}.png`,
       currentPrice: product.price,
       currentBrand: product.brand,
       priceHistory: generatePriceHistory(30, product.price, product.brand),
+      tags: product.tags,
     };
   });
 };
@@ -53,6 +54,7 @@ export const getCategories = async (): Promise<Category[]> => {
           currentPrice: product.currentPrice,
           currentBrand: product.currentBrand,
           priceHistory: product.priceHistory,
+          tags: product.tags,
         };
       }) ?? [],
     };

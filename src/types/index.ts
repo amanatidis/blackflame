@@ -13,7 +13,9 @@ export interface Product {
   priceHistory: PriceHistory[];
   currentPrice: number;
   currentBrand: string;
+  tags?: string[];
 }
+
 
 export interface Category {
   id: string;
