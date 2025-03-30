@@ -7,16 +7,18 @@ import {
   Image,
   Dimensions,
   Platform,
-  TouchableOpacity,
 } from 'react-native';
 import { LineChart } from 'react-native-chart-kit';
 import { Product } from '../types';
-import ProductTag from '../components/ProductTag';
+import { useTheme } from '../context/ThemeContext';
+import { getThemeColors, spacing, typography } from '../theme/theme';
 
 const { width } = Dimensions.get('window');
 
-const ProductDetailScreen = ({ route, navigation }: any) => {
+const ProductDetailScreen = ({ route }: any) => {
   const { product }: { product: Product } = route.params;
+  const { theme } = useTheme();
+  const colors = getThemeColors(theme);
 
   const chartData = {
     labels: product.priceHistory.map((_, index) => 
@@ -32,32 +34,26 @@ const ProductDetailScreen = ({ route, navigation }: any) => {
   };
 
   return (
-    <ScrollView style={styles.container}>
+    <ScrollView style={[styles.container, { backgroundColor: colors.background }]}>
       <Image source={{ uri: product.imageUrl }} style={styles.image} />
       
       <View style={styles.content}>
-        <Text style={styles.name}>{product.name}</Text>
-        <Text style={styles.brand}>{product.currentBrand}</Text>
-        <Text style={styles.price}>€{product.currentPrice.toFixed(2)}</Text>
+        <Text style={[styles.name, { color: colors.text }]}>{product.name}</Text>
+        <Text style={[styles.brand, { color: colors.secondaryText }]}>{product.currentBrand}</Text>
+        <Text style={[styles.price, { color: colors.primary }]}>€{product.currentPrice.toFixed(2)}</Text>
         
-        <View style={styles.tagsContainer}>
-          {product.tags?.map((tag, index) => (
-            <ProductTag key={index} text={tag} />
-          ))}
-        </View>
+        <Text style={[styles.description, { color: colors.text }]}>{product.description}</Text>
         
-        <Text style={styles.description}>{product.description}</Text>
-        
-        <View style={styles.chartContainer}>
-          <Text style={styles.chartTitle}>Price History</Text>
+        <View style={[styles.chartContainer, { backgroundColor: colors.card }]}>
+          <Text style={[styles.chartTitle, { color: colors.text }]}>Price History</Text>
           <LineChart
             data={chartData}
             width={width - 32}
             height={220}
             chartConfig={{
-              backgroundColor: '#ffffff',
-              backgroundGradientFrom: '#ffffff',
-              backgroundGradientTo: '#ffffff',
+              backgroundColor: colors.card,
+              backgroundGradientFrom: colors.card,
+              backgroundGradientTo: colors.card,
               decimalPlaces: 2,
               color: (opacity = 1) => `rgba(33, 150, 243, ${opacity})`,
               style: {
@@ -76,7 +72,6 @@ const ProductDetailScreen = ({ route, navigation }: any) => {
 const styles = StyleSheet.create({
   container: {
     flex: 1,
-    backgroundColor: '#f5f5f5',
   },
   image: {
     width: 128,
@@ -84,34 +79,30 @@ const styles = StyleSheet.create({
     alignSelf: 'center',
   },
   content: {
-    padding: 16,
+    padding: spacing.md,
   },
   name: {
+    ...typography.header,
     fontSize: 24,
-    fontWeight: 'bold',
-    marginBottom: 8,
+    marginBottom: spacing.sm,
   },
   brand: {
-    fontSize: 16,
-    color: '#666',
-    marginBottom: 8,
+    ...typography.body,
+    marginBottom: spacing.sm,
   },
   price: {
+    ...typography.header,
     fontSize: 28,
-    color: '#2196F3',
-    fontWeight: 'bold',
-    marginBottom: 16,
+    marginBottom: spacing.md,
   },
   description: {
-    fontSize: 16,
+    ...typography.body,
     lineHeight: 24,
-    color: '#333',
-    marginBottom: 24,
+    marginBottom: spacing.lg,
   },
   chartContainer: {
-    backgroundColor: 'white',
     borderRadius: 12,
-    padding: 16,
+    padding: spacing.md,
     ...(Platform.OS === 'web' ? {
       boxShadow: '0 2px 4px rgba(0, 0, 0, 0.1)',
     } : {
@@ -123,29 +114,12 @@ const styles = StyleSheet.create({
     }),
   },
   chartTitle: {
-    fontSize: 18,
-    fontWeight: 'bold',
-    marginBottom: 16,
+    ...typography.title,
+    marginBottom: spacing.md,
   },
   chart: {
-    marginVertical: 8,
+    marginVertical: spacing.sm,
     borderRadius: 16,
-  },
-  backButton: {
-    padding: 10,
-    backgroundColor: '#2196F3',
-    borderRadius: 5,
-    marginBottom: 10,
-  },
-  backButtonText: {
-    color: '#fff',
-    fontSize: 16,
-    textAlign: 'center',
-  },
-  tagsContainer: {
-    flexDirection: 'row',
-    flexWrap: 'wrap',
-    marginBottom: 16,
   },
 });
 

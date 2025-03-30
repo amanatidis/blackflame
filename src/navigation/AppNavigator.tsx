@@ -5,8 +5,10 @@ import HomeScreen from '../screens/HomeScreen';
 import ProductDetailScreen from '../screens/ProductDetailScreen';
 import LoginScreen from '../screens/LoginScreen';
 import { useAuth } from '../context/AuthContext';
-import { ActivityIndicator, View, ImageBackground, StyleSheet } from 'react-native';
+import { useTheme } from '../context/ThemeContext';
+import { ActivityIndicator, View, StyleSheet } from 'react-native';
 import Header from '../components/Header';
+import { getThemeColors } from '../theme/theme';
 
 export type RootStackParamList = {
   Login: undefined;
@@ -18,11 +20,13 @@ const Stack = createNativeStackNavigator<RootStackParamList>();
 
 const AppNavigator = () => {
   const { user, isLoading } = useAuth();
+  const { theme } = useTheme();
+  const colors = getThemeColors(theme);
 
   if (isLoading) {
     return (
       <View style={{ flex: 1, justifyContent: 'center', alignItems: 'center' }}>
-        <ActivityIndicator size="large" color="#2196F3" />
+        <ActivityIndicator size="large" color={colors.primary} />
       </View>
     );
   }
@@ -31,7 +35,12 @@ const AppNavigator = () => {
     ...DefaultTheme,
     colors: {
       ...DefaultTheme.colors,
-      // background: 'transparent',
+      primary: colors.primary,
+      background: colors.background,
+      card: colors.card,
+      text: colors.text,
+      border: colors.border,
+      notification: colors.notification,
     },
   };
 
@@ -41,11 +50,11 @@ const AppNavigator = () => {
         initialRouteName={user ? 'Home' : 'Login'}
         screenOptions={{
           headerStyle: {
-            backgroundColor: '#2196F3',
+            backgroundColor: colors.headerBackground,
           },
-          headerTintColor: '#fff',
+          headerTintColor: colors.headerText,
           headerTitleStyle: {
-            fontWeight: 'bold',
+            fontWeight: '700',
           },
           header: ({ route, options }) => (
             <Header title={options.title || route.name} />

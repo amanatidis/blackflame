@@ -10,45 +10,64 @@ import {
 import { Category, Product } from '../types';
 import { getCategories } from '../services/mockData';
 import { useAuth } from '../context/AuthContext';
-import ProductTag from '../components/ProductTag';
+import { useTheme } from '../context/ThemeContext';
+import { getThemeColors, spacing, typography } from '../theme/theme';
 
-const ProductCard = ({ product, onPress }: { product: Product; onPress: () => void }) => (
-  <TouchableOpacity 
-    style={[styles.productCard, { pointerEvents: 'auto' }]} 
-    onPress={onPress}
-  >
-    <Image source={{ uri: product.imageUrl }} style={styles.productImage} />
-    <View style={styles.productInfo}>
-      <Text style={styles.productName}>{product.name}</Text>
-      <Text style={styles.productPrice}>€{product.currentPrice.toFixed(2)}</Text>
-      <Text style={styles.productBrand}>{product.currentBrand}</Text>
-      <View style={styles.tagsContainer}>
-        {product.tags?.slice(0, 2).map((tag, index) => (
-          <ProductTag key={index} text={tag} />
-        ))}
-      </View>
-    </View>
-  </TouchableOpacity>
-);
-
-const CategorySection = ({ category, onProductPress }: { category: Category; onProductPress: (product: Product) => void }) => (
-  <View style={styles.categorySection}>
-    <Text style={styles.categoryTitle}>{category.name}</Text>
-    <ScrollView horizontal showsHorizontalScrollIndicator={false}>
-      {category.products.map((product) => (
-        <ProductCard
-          key={product.id}
-          product={product}
-          onPress={() => onProductPress(product)}
-        />
-      ))}
-    </ScrollView>
+const Tag = ({ text, colors }: { text: string; colors: any }) => (
+  <View style={[styles.tagContainer, { backgroundColor: colors.tagBackground, borderColor: colors.tagBorder }]}>
+    <Text style={[styles.tagText, { color: colors.tagText }]}>{text}</Text>
   </View>
 );
+
+const ProductCard = ({ product, onPress }: { product: Product; onPress: () => void }) => {
+  const { theme } = useTheme();
+  const colors = getThemeColors(theme);
+
+  return (
+    <TouchableOpacity 
+      style={[styles.productCard, { backgroundColor: colors.card, pointerEvents: 'auto' }]} 
+      onPress={onPress}
+    >
+      <Image source={{ uri: product.imageUrl }} style={styles.productImage} />
+      <View style={styles.productInfo}>
+        <Text style={[styles.productName, { color: colors.text }]}>{product.name}</Text>
+        <Text style={[styles.productPrice, { color: colors.primary }]}>€{product.currentPrice.toFixed(2)}</Text>
+        <View style={styles.tagsContainer}>
+          <Tag text={product.currentBrand} colors={colors} />
+          {product.tags?.map((tag, index) => (
+            <Tag key={index} text={tag} colors={colors} />
+          ))}
+        </View>
+      </View>
+    </TouchableOpacity>
+  );
+};
+
+const CategorySection = ({ category, onProductPress }: { category: Category; onProductPress: (product: Product) => void }) => {
+  const { theme } = useTheme();
+  const colors = getThemeColors(theme);
+
+  return (
+    <View style={styles.categorySection}>
+      <Text style={[styles.categoryTitle, { color: colors.text }]}>{category.name}</Text>
+      <ScrollView horizontal showsHorizontalScrollIndicator={false}>
+        {category.products.map((product) => (
+          <ProductCard
+            key={product.id}
+            product={product}
+            onPress={() => onProductPress(product)}
+          />
+        ))}
+      </ScrollView>
+    </View>
+  );
+};
 
 const HomeScreen = ({ navigation }: any) => {
   const [categories, setCategories] = useState<Category[]>([]);
   const { user } = useAuth();
+  const { theme } = useTheme();
+  const colors = getThemeColors(theme);
 
   useEffect(() => {
     const loadCategories = async () => {
@@ -64,9 +83,9 @@ const HomeScreen = ({ navigation }: any) => {
 
   return (
     <View style={{ flex: 1 }}>
-      <ScrollView style={styles.container}>
-        <View style={styles.welcomeSection}>
-          <Text style={styles.welcomeText}>
+      <ScrollView style={[styles.container, { backgroundColor: colors.background }]}>
+        <View style={[styles.welcomeSection, { backgroundColor: colors.inputBackground }]}>
+          <Text style={[styles.welcomeText, { color: colors.text }]}>
             Welcome{user?.name ? `, ${user.name}` : ''}!
           </Text>
         </View>
@@ -85,31 +104,26 @@ const HomeScreen = ({ navigation }: any) => {
 const styles = StyleSheet.create({
   container: {
     flex: 1,
-    backgroundColor: '#fff',
   },
   welcomeSection: {
-    padding: 16,
-    backgroundColor: '#f5f5f5',
+    padding: spacing.md,
   },
   welcomeText: {
+    ...typography.header,
     fontSize: 24,
-    fontWeight: 'bold',
-    color: '#333',
   },
   categorySection: {
-    marginVertical: 16,
+    marginVertical: spacing.md,
   },
   categoryTitle: {
-    fontSize: 24,
-    fontWeight: 'bold',
-    marginLeft: 16,
-    marginBottom: 12,
+    ...typography.header,
+    marginLeft: spacing.md,
+    marginBottom: spacing.sm,
   },
   productCard: {
     width: 256,
-    backgroundColor: 'white',
     borderRadius: 12,
-    marginHorizontal: 8,
+    marginHorizontal: spacing.sm,
   },
   productImage: {
     width: 128,
@@ -118,27 +132,30 @@ const styles = StyleSheet.create({
     borderTopRightRadius: 12,
   },
   productInfo: {
-    padding: 12,
+    padding: spacing.sm,
   },
   productName: {
-    fontSize: 16,
-    fontWeight: 'bold',
-    marginBottom: 4,
+    ...typography.title,
+    marginBottom: spacing.xs,
   },
   productPrice: {
+    ...typography.title,
     fontSize: 18,
-    color: '#2196F3',
-    fontWeight: 'bold',
-  },
-  productBrand: {
-    fontSize: 14,
-    color: '#666',
-    marginTop: 4,
+    marginBottom: spacing.xs,
   },
   tagsContainer: {
     flexDirection: 'row',
     flexWrap: 'wrap',
-    marginTop: 8,
+    gap: spacing.xs,
+  },
+  tagContainer: {
+    paddingHorizontal: spacing.sm,
+    paddingVertical: spacing.xs,
+    borderRadius: 4,
+    borderWidth: 1,
+  },
+  tagText: {
+    ...typography.caption,
   },
 });
 
