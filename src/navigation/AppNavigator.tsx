@@ -36,53 +36,43 @@ const AppNavigator = () => {
   };
 
   return (
-    <ImageBackground 
-      source={require('../assets/images/moonlight.png')} 
-      style={styles.backgroundImage}
-    >
-      <NavigationContainer theme={navTheme}>
-        <Stack.Navigator
-          initialRouteName={user ? 'Home' : 'Login'}
-          screenOptions={{
-            headerStyle: {
-              backgroundColor: '#2196F3',
-            },
-            headerTintColor: '#fff',
-            headerTitleStyle: {
-              fontWeight: 'bold',
-            },
-            header: ({ route, options }) => (
-              <Header title={options.title || route.name} />
-            ),
-          }}
-        >
-          <Stack.Screen
-            name="Login"
-            component={LoginScreen}
-            options={{ headerShown: true, title: 'Welcome' }}
-          />
-          <Stack.Screen
-            name="Home"
-            component={HomeScreen}
-            options={{ title: 'Price Tracker' }}
-          />
-          <Stack.Screen
-            name="ProductDetail"
-            component={ProductDetailScreen}
-            options={{ title: 'Product Details' }}
-          />
-        </Stack.Navigator>
-      </NavigationContainer>
-    </ImageBackground>
+    <NavigationContainer theme={navTheme}>
+      <Stack.Navigator
+        initialRouteName={user ? 'Home' : 'Login'}
+        screenOptions={{
+          headerStyle: {
+            backgroundColor: '#2196F3',
+          },
+          headerTintColor: '#fff',
+          headerTitleStyle: {
+            fontWeight: 'bold',
+          },
+          header: ({ route, options }) => (
+            <Header title={options.title || route.name} />
+          ),
+        }}
+      >
+        <Stack.Screen
+          name="Login"
+          component={LoginScreen}
+          options={{ headerShown: true, title: 'Welcome' }}
+        />
+        <Stack.Screen
+          name="Home"
+          component={HomeScreen}
+          options={{ title: 'Price Tracker' }}
+        />
+        <Stack.Screen
+          name="ProductDetail"
+          component={ProductDetailScreen}
+          options={{ title: 'Product Details' }}
+        />
+      </Stack.Navigator>
+    </NavigationContainer>
   );
 };
 
 const styles = StyleSheet.create({
-  backgroundImage: {
-    flex: 1,
-    width: '100%',
-    height: '100%',
-  },
 });
 
 export default AppNavigator; 
