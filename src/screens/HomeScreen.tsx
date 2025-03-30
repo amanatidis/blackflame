@@ -4,7 +4,6 @@ import {
   Text,
   StyleSheet,
   ScrollView,
-  TouchableOpacity,
   Image,
 } from 'react-native';
 import { Category, Product } from '../types';
@@ -13,52 +12,7 @@ import { useAuth } from '../context/AuthContext';
 import { useTheme } from '../context/ThemeContext';
 import { getThemeColors, spacing, typography } from '../theme/theme';
 import { Layout } from '../components/Layout';
-
-const Tag = ({ text, colors }: { text: string; colors: any }) => (
-  <View style={[styles.tagContainer, { backgroundColor: colors.tagBackground, borderColor: colors.tagBorder }]}>
-    <Text style={[styles.tagText, { color: colors.tagText }]}>{text}</Text>
-  </View>
-);
-
-const ProductCard = ({ product, onPress }: { product: Product; onPress: () => void }) => {
-  const { theme } = useTheme();
-  const colors = getThemeColors(theme);
-
-  return (
-    <TouchableOpacity 
-      style={[styles.productCard, { backgroundColor: colors.card, pointerEvents: 'auto' }]} 
-      onPress={onPress}
-    >
-      <View style={styles.productContent}>
-        <Image source={{ uri: product.imageUrl }} style={styles.productImage} />
-        <View style={styles.vendorPrices}>
-          {product.vendorProducts?.map((vendorProduct, index) => (
-            <TouchableOpacity 
-              key={index}
-              style={styles.vendorPriceItem}
-              onPress={() => window.open(vendorProduct.url, '_blank')}
-            >
-              <View style={styles.vendorPriceRow}>
-                <Text style={[styles.vendorName, { color: colors.text }]} numberOfLines={1}>{vendorProduct.vendor}</Text>
-                <Text style={[styles.vendorPrice, { color: colors.primary }]}>€{vendorProduct.price.toFixed(2)}</Text>
-              </View>
-            </TouchableOpacity>
-          ))}
-        </View>
-      </View>
-      <View style={styles.productInfo}>
-        <Text style={[styles.productName, { color: colors.text }]}>{product.name}</Text>
-        <Text style={[styles.productPrice, { color: colors.primary }]}>€{product.currentPrice.toFixed(2)}</Text>
-        <View style={styles.tagsContainer}>
-          <Tag text={product.currentBrand} colors={colors} />
-          {product.tags?.map((tag, index) => (
-            <Tag key={index} text={tag} colors={colors} />
-          ))}
-        </View>
-      </View>
-    </TouchableOpacity>
-  );
-};
+import { ProductCard } from '../components/ProductCard';
 
 const CategorySection = ({ category, onProductPress }: { category: Category; onProductPress: (product: Product) => void }) => {
   const { theme } = useTheme();
@@ -136,69 +90,6 @@ const styles = StyleSheet.create({
     ...typography.header,
     marginLeft: spacing.md,
     marginBottom: spacing.sm,
-  },
-  productCard: {
-    width: 320,
-    borderRadius: 12,
-    marginHorizontal: spacing.sm,
-  },
-  productContent: {
-    flexDirection: 'row',
-    borderTopLeftRadius: 12,
-    borderTopRightRadius: 12,
-    overflow: 'hidden',
-  },
-  productImage: {
-    width: 128,
-    height: 128,
-  },
-  vendorPrices: {
-    flex: 1,
-    padding: spacing.sm,
-    backgroundColor: '#F5F5F5',
-  },
-  vendorPriceItem: {
-    marginBottom: spacing.xs,
-  },
-  vendorPriceRow: {
-    flexDirection: 'row',
-    justifyContent: 'space-between',
-    alignItems: 'center',
-  },
-  vendorName: {
-    ...typography.caption,
-    flex: 1,
-    marginRight: spacing.sm,
-  },
-  vendorPrice: {
-    ...typography.body,
-    fontWeight: '600',
-  },
-  productInfo: {
-    padding: spacing.sm,
-  },
-  productName: {
-    ...typography.title,
-    marginBottom: spacing.xs,
-  },
-  productPrice: {
-    ...typography.title,
-    fontSize: 18,
-    marginBottom: spacing.xs,
-  },
-  tagsContainer: {
-    flexDirection: 'row',
-    flexWrap: 'wrap',
-    gap: spacing.xs,
-  },
-  tagContainer: {
-    paddingHorizontal: spacing.sm,
-    paddingVertical: spacing.xs,
-    borderRadius: 4,
-    borderWidth: 1,
-  },
-  tagText: {
-    ...typography.caption,
   },
 });
 
