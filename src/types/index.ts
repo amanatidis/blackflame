@@ -14,8 +14,15 @@ export interface Product {
   currentPrice: number;
   currentBrand: string;
   tags?: string[];
+  vendorProducts?: VendorProduct[];
 }
 
+
+export interface VendorProduct {
+  vendor: string;
+  price: number;
+  url: string;
+}
 
 export interface Category {
   id: string;

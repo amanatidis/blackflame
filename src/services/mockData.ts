@@ -33,6 +33,7 @@ export const getProductsFromApi = async (): Promise<Product[]> => {
       currentBrand: product.brand,
       priceHistory: generatePriceHistory(30, product.price, product.brand),
       tags: product.tags,
+      vendorProducts: product.children,
     };
   });
 };
@@ -55,6 +56,7 @@ export const getCategories = async (): Promise<Category[]> => {
           currentBrand: product.currentBrand,
           priceHistory: product.priceHistory,
           tags: product.tags,
+          vendorProducts: product.vendorProducts,
         };
       }) ?? [],
     };

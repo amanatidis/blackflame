@@ -10,6 +10,7 @@ import type { NativeStackNavigationProp } from '@react-navigation/native-stack';
 import type { RootStackParamList } from '../navigation/AppNavigator';
 import { useTheme } from '../context/ThemeContext';
 import { getThemeColors, spacing, typography } from '../theme/theme';
+import { Layout } from '../components/Layout';
 
 type LoginScreenNavigationProp = NativeStackNavigationProp<RootStackParamList, 'Login'>;
 
@@ -19,8 +20,8 @@ const LoginScreen = () => {
   const colors = getThemeColors(theme);
 
   return (
-    <View style={[styles.container, { backgroundColor: colors.background }]}>
-      <View style={styles.content}>
+    <Layout>
+      <View style={[styles.content, { backgroundColor: colors.background }]}>
         <Text style={[styles.title, { color: colors.text }]}>Welcome to Price Tracker</Text>
         <Text style={[styles.subtitle, { color: colors.secondaryText }]}>Track your favorite products and get notified when prices change</Text>
         
@@ -31,20 +32,17 @@ const LoginScreen = () => {
           <Text style={[styles.buttonText, { color: colors.headerText }]}>Browse Products</Text>
         </TouchableOpacity>
       </View>
-    </View>
+    </Layout>
   );
 };
 
 const styles = StyleSheet.create({
-  container: {
+  content: {
     flex: 1,
     justifyContent: 'center',
     alignItems: 'center',
-  },
-  content: {
     width: '100%',
     padding: spacing.lg,
-    alignItems: 'center',
   },
   title: {
     ...typography.header,

@@ -12,6 +12,7 @@ import { getCategories } from '../services/mockData';
 import { useAuth } from '../context/AuthContext';
 import { useTheme } from '../context/ThemeContext';
 import { getThemeColors, spacing, typography } from '../theme/theme';
+import { Layout } from '../components/Layout';
 
 const Tag = ({ text, colors }: { text: string; colors: any }) => (
   <View style={[styles.tagContainer, { backgroundColor: colors.tagBackground, borderColor: colors.tagBorder }]}>
@@ -28,7 +29,23 @@ const ProductCard = ({ product, onPress }: { product: Product; onPress: () => vo
       style={[styles.productCard, { backgroundColor: colors.card, pointerEvents: 'auto' }]} 
       onPress={onPress}
     >
-      <Image source={{ uri: product.imageUrl }} style={styles.productImage} />
+      <View style={styles.productContent}>
+        <Image source={{ uri: product.imageUrl }} style={styles.productImage} />
+        <View style={styles.vendorPrices}>
+          {product.vendorProducts?.map((vendorProduct, index) => (
+            <TouchableOpacity 
+              key={index}
+              style={styles.vendorPriceItem}
+              onPress={() => window.open(vendorProduct.url, '_blank')}
+            >
+              <View style={styles.vendorPriceRow}>
+                <Text style={[styles.vendorName, { color: colors.text }]} numberOfLines={1}>{vendorProduct.vendor}</Text>
+                <Text style={[styles.vendorPrice, { color: colors.primary }]}>€{vendorProduct.price.toFixed(2)}</Text>
+              </View>
+            </TouchableOpacity>
+          ))}
+        </View>
+      </View>
       <View style={styles.productInfo}>
         <Text style={[styles.productName, { color: colors.text }]}>{product.name}</Text>
         <Text style={[styles.productPrice, { color: colors.primary }]}>€{product.currentPrice.toFixed(2)}</Text>
@@ -82,7 +99,7 @@ const HomeScreen = ({ navigation }: any) => {
   };
 
   return (
-    <View style={{ flex: 1 }}>
+    <Layout>
       <ScrollView style={[styles.container, { backgroundColor: colors.background }]}>
         <View style={[styles.welcomeSection, { backgroundColor: colors.inputBackground }]}>
           <Text style={[styles.welcomeText, { color: colors.text }]}>
@@ -97,7 +114,7 @@ const HomeScreen = ({ navigation }: any) => {
           />
         ))}
       </ScrollView>
-    </View>
+    </Layout>
   );
 };
 
@@ -121,15 +138,41 @@ const styles = StyleSheet.create({
     marginBottom: spacing.sm,
   },
   productCard: {
-    width: 256,
+    width: 320,
     borderRadius: 12,
     marginHorizontal: spacing.sm,
+  },
+  productContent: {
+    flexDirection: 'row',
+    borderTopLeftRadius: 12,
+    borderTopRightRadius: 12,
+    overflow: 'hidden',
   },
   productImage: {
     width: 128,
     height: 128,
-    borderTopLeftRadius: 12,
-    borderTopRightRadius: 12,
+  },
+  vendorPrices: {
+    flex: 1,
+    padding: spacing.sm,
+    backgroundColor: '#F5F5F5',
+  },
+  vendorPriceItem: {
+    marginBottom: spacing.xs,
+  },
+  vendorPriceRow: {
+    flexDirection: 'row',
+    justifyContent: 'space-between',
+    alignItems: 'center',
+  },
+  vendorName: {
+    ...typography.caption,
+    flex: 1,
+    marginRight: spacing.sm,
+  },
+  vendorPrice: {
+    ...typography.body,
+    fontWeight: '600',
   },
   productInfo: {
     padding: spacing.sm,
