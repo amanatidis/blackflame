@@ -1,5 +1,5 @@
 import React from 'react';
-import { View, Text, TouchableOpacity, StyleSheet, Image } from 'react-native';
+import { View, Text, TouchableOpacity, StyleSheet, Image, Platform } from 'react-native';
 import { Product } from '../types';
 import { useTheme } from '../context/ThemeContext';
 import { getThemeColors, spacing, typography } from '../theme/theme';
@@ -38,28 +38,35 @@ export function ProductCard({ product, onPress }: ProductCardProps) {
     <TouchableOpacity 
       style={[styles.card, { backgroundColor: colors.card }]} 
       onPress={() => onPress(product)}
+      activeOpacity={0.7}
     >
       <View style={styles.productContent}>
         <Image source={{ uri: product.imageUrl }} style={styles.productImage} />
         <View style={styles.vendorPrices}>
-          {product.vendorProducts?.map((vendorProduct, index) => (
+        {product.vendorProducts?.map((vendorProduct, index) => (
             <TouchableOpacity 
-              key={index}
-              style={styles.vendorPriceItem}
-              onPress={() => window.open(vendorProduct.url, '_blank')}
+                key={index}
+                style={styles.vendorPriceItem}
+                onPress={() => window.open(vendorProduct.url, '_blank')}
+                activeOpacity={0.6}
             >
-              <View style={styles.vendorPriceRow}>
-                <Image source={brandImages[vendorProduct.vendor]} style={{ width: 24, height: 24, marginRight: spacing.xs }} />
-                {/* <Text style={[styles.vendorName, { color: colors.text }]} numberOfLines={1}>{vendorProduct.vendor}</Text> */}
-                <Text style={[styles.vendorPrice, { color: colors.primary }]}>€{vendorProduct.price.toFixed(2)}</Text>
-              </View>
+            <View style={styles.vendorPriceRow}>
+                <Image  source={brandImages[vendorProduct.vendor]}  />
+                <Text style={[styles.vendorPrice, { color: colors.primary }]}>
+                €{vendorProduct.price.toFixed(2)}
+                </Text>
+            </View>
             </TouchableOpacity>
-          ))}
+        ))}
         </View>
       </View>
       <View style={styles.productInfo}>
-        <Text style={[styles.productName, { color: colors.text }]}>{product.name}</Text>
-        <Text style={[styles.productPrice, { color: colors.primary }]}>€{product.currentPrice.toFixed(2)}</Text>
+        <Text style={[styles.productName, { color: colors.text }]} numberOfLines={2}>
+          {product.name}
+        </Text>
+        <Text style={[styles.productPrice, { color: colors.primary }]}>
+          €{product.currentPrice.toFixed(2)}
+        </Text>
         <View style={styles.tagsContainer}>
           <Tag text={product.currentBrand} colors={colors} />
           {product.tags?.map((tag, index) => (
@@ -74,14 +81,26 @@ export function ProductCard({ product, onPress }: ProductCardProps) {
 const styles = StyleSheet.create({
   card: {
     width: 320,
-    borderRadius: 12,
+    borderRadius: 16,
     marginHorizontal: spacing.sm,
+    ...Platform.select({
+      ios: {
+        shadowColor: '#000',
+        shadowOffset: { width: 0, height: 2 },
+        shadowOpacity: 0.1,
+        shadowRadius: 8,
+      },
+      android: {
+        elevation: 4,
+      },
+    }),
   },
   productContent: {
     flexDirection: 'row',
-    borderTopLeftRadius: 12,
-    borderTopRightRadius: 12,
+    borderTopLeftRadius: 16,
+    borderTopRightRadius: 16,
     overflow: 'hidden',
+    backgroundColor: 'transparent',
   },
   productImage: {
     width: 128,
@@ -89,37 +108,35 @@ const styles = StyleSheet.create({
   },
   vendorPrices: {
     flex: 1,
-    padding: spacing.sm,
-    backgroundColor: 'transparent',
+    justifyContent: 'space-around',
   },
   vendorPriceItem: {
-    marginBottom: spacing.xs,
+    marginVertical: spacing.xs,
+    paddingVertical: spacing.xs,
   },
   vendorPriceRow: {
     flexDirection: 'row',
-    justifyContent: 'space-between',
     alignItems: 'center',
-  },
-  vendorName: {
-    ...typography.caption,
-    flex: 1,
-    marginRight: spacing.sm,
   },
   vendorPrice: {
     ...typography.body,
     fontWeight: '600',
+    fontSize: 15,
   },
   productInfo: {
-    padding: spacing.sm,
+    padding: spacing.md,
   },
   productName: {
     ...typography.title,
     marginBottom: spacing.xs,
+    fontSize: 16,
+    lineHeight: 22,
   },
   productPrice: {
     ...typography.title,
-    fontSize: 18,
-    marginBottom: spacing.xs,
+    fontSize: 20,
+    marginBottom: spacing.sm,
+    fontWeight: '700',
   },
   tagsContainer: {
     flexDirection: 'row',
@@ -129,10 +146,12 @@ const styles = StyleSheet.create({
   tagContainer: {
     paddingHorizontal: spacing.sm,
     paddingVertical: spacing.xs,
-    borderRadius: 4,
+    borderRadius: 6,
     borderWidth: 1,
   },
   tagText: {
     ...typography.caption,
+    fontSize: 12,
+    fontWeight: '500',
   },
 });

@@ -22,6 +22,7 @@ export interface VendorProduct {
   vendor: string;
   price: number;
   url: string;
+  logoUrl?: string;
 }
 
 export interface Category {
