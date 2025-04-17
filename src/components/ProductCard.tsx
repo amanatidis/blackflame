@@ -125,10 +125,12 @@ const styles = StyleSheet.create({
     borderTopRightRadius: 16,
     overflow: 'hidden',
     backgroundColor: 'transparent',
+    padding: spacing.sm,
   },
   productImage: {
     width: 128,
     height: 128,
+    borderRadius: 8,
   },
   vendorPrices: {
     flex: 1,

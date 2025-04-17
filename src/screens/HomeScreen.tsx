@@ -182,11 +182,13 @@ const HomeScreen = ({ navigation }: any) => {
       <View style={[styles.container, { backgroundColor: colors.background }]}>
         <View style={[styles.header, { backgroundColor: colors.background }]}>
           <View style={[styles.welcomeSection, { backgroundColor: colors.inputBackground }]}>
-            <Text style={[styles.welcomeText, { color: colors.text }]}>
-              Welcome{user?.name ? `, ${user.name}` : ''}!
-            </Text>
+            <View style={styles.welcomeRow}>
+              <Text style={[styles.welcomeText, { color: colors.text }]}>
+                Welcome{user?.name ? `, ${user.name}` : ''}!
+              </Text>
+              <SearchBar onSearch={handleSearch} value={searchQuery} />
+            </View>
           </View>
-          <SearchBar onSearch={handleSearch} value={searchQuery} />
         </View>
         <ScrollView style={styles.scrollContent}>
           {searchQuery ? (
@@ -225,26 +227,30 @@ const styles = StyleSheet.create({
   welcomeSection: {
     padding: spacing.md,
   },
+  welcomeRow: {
+    flexDirection: 'row',
+    alignItems: 'center',
+    justifyContent: 'space-between',
+  },
   welcomeText: {
     ...typography.header,
     fontSize: 24,
   },
   categorySection: {
     marginVertical: spacing.md,
+    paddingHorizontal: spacing.md,
   },
   categoryTitle: {
     ...typography.header,
-    marginLeft: spacing.md,
     marginBottom: spacing.sm,
   },
   separator: {
     height: 1,
-    marginHorizontal: spacing.md,
     marginTop: spacing.md,
   },
   searchWrapper: {
-    margin: spacing.md,
-    marginTop: spacing.sm,
+    flex: 1,
+    marginLeft: spacing.md,
   },
   searchContainer: {
     flexDirection: 'row',
