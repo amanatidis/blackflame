@@ -59,6 +59,7 @@ export const getCategories = async (): Promise<Category[]> => {
           vendorProducts: product.vendorProducts,
         };
       }) ?? [],
+      isLoved: false,
     };
   });
 
