@@ -1,10 +1,12 @@
-import React, { useState } from 'react';
+import React, { useState, useEffect } from 'react';
 import { View, Text, TouchableOpacity, StyleSheet, Image, Platform } from 'react-native';
 import { Product } from '../types';
 import { useTheme } from '../context/ThemeContext';
 import { getThemeColors, spacing, typography } from '../theme/theme';
 import { Heart } from 'react-native-feather';
 import { useAuth } from '../context/AuthContext';
+import { toggleProductLike } from '../services/firebaseService';
+import { getAuth } from 'firebase/auth';
 
 interface ProductCardProps {
   product: Product;
@@ -38,9 +40,41 @@ export function ProductCard({ product, onPress }: ProductCardProps) {
   const { user } = useAuth();
   const [isLoved, setIsLoved] = useState(false);
 
-  const handleLovePress = (e: any) => {
+  useEffect(() => {
+    // Check if the product is already liked by the user
+    const checkIfLiked = async () => {
+      if (user) {
+        try {
+          const auth = getAuth();
+          const currentUser = auth.currentUser;
+          if (currentUser) {
+            const result = await toggleProductLike(currentUser.uid, product.id);
+            setIsLoved(result.action === 'liked');
+          }
+        } catch (error) {
+          console.error('Error checking like status:', error);
+        }
+      }
+    };
+    checkIfLiked();
+  }, [user, product.id]);
+
+  const handleLovePress = async (e: any) => {
     e.stopPropagation();
-    setIsLoved(!isLoved);
+    console.log('handleLovePress');
+    try {
+      const auth = getAuth();
+      const currentUser = auth.currentUser;
+      console.log('currentUser', currentUser);
+      if (currentUser) {
+        const result = await toggleProductLike(currentUser.uid, product.id);
+        if (result.success) {
+          setIsLoved(result.action === 'liked');
+        }
+      }
+    } catch (error) {
+      console.error('Error toggling like:', error);
+    }
   };
 
   return (

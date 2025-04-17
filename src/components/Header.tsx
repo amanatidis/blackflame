@@ -47,9 +47,9 @@ const Header: React.FC<HeaderProps> = ({ title }) => {
           onPress={handleProfilePress}
           style={[styles.authButton, { pointerEvents: 'auto' }]}
         >
-          {user?.picture ? (
+          {user?.photoURL ? (
             <Image
-              source={{ uri: user.picture }}
+              source={{ uri: user.photoURL }}
               style={styles.profilePicture}
             />
           ) : (

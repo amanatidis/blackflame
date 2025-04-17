@@ -1,14 +1,15 @@
 import React, { createContext, useState, useContext, useEffect } from 'react';
 import AsyncStorage from '@react-native-async-storage/async-storage';
+import { GoogleAuthProvider, signInWithCredential, signOut } from '@firebase/auth';
 import * as WebBrowser from 'expo-web-browser';
 import * as Google from 'expo-auth-session/providers/google';
 import { makeRedirectUri } from 'expo-auth-session';
 import { Platform } from 'react-native';
 import { OAUTH_CONFIG, APP_CONFIG } from '../config/config';
-
+import { firebaseAuth, firestore } from '../services/firebaseService';
+import { collection, doc, getDoc } from '@firebase/firestore';
 
 WebBrowser.maybeCompleteAuthSession();
-
 
 interface AuthContextType {
   user: any | null;
@@ -34,60 +35,89 @@ export const AuthProvider: React.FC<{ children: React.ReactNode }> = ({ children
     androidClientId: OAUTH_CONFIG.google.androidClientId,
     redirectUri,
     scopes: ['profile', 'email'],
-    responseType: 'token',
+    responseType: 'id_token',
   });
 
   useEffect(() => {
-    loadStoredUser();
+    let unsubscribe: () => void;
+
+    const initializeAuth = async () => {
+      try {
+        // Set up Firebase auth listener first
+        unsubscribe = firebaseAuth.onAuthStateChanged(async (firebaseUser) => {
+          if (firebaseUser) {
+            const userData = {
+              uid: firebaseUser.uid,
+              email: firebaseUser.email,
+              displayName: firebaseUser.displayName,
+              photoURL: firebaseUser.photoURL,
+            };
+            await AsyncStorage.setItem('user', JSON.stringify(userData));
+            setUser(userData);
+          } else {
+            // If no Firebase user, check AsyncStorage
+            const storedUser = await AsyncStorage.getItem('user');
+            if (storedUser) {
+              setUser(JSON.parse(storedUser));
+            } else {
+              setUser(null);
+            }
+            await AsyncStorage.removeItem('user');
+          }
+          setIsLoading(false);
+        });
+      } catch (error) {
+        console.error('Error initializing auth:', error);
+        setIsLoading(false);
+      }
+    };
+
+    initializeAuth();
+
+    return () => {
+      if (unsubscribe) {
+        unsubscribe();
+      }
+    };
   }, []);
 
   useEffect(() => {
     if (response?.type === 'success') {
-      handleSignInSuccess(response.authentication?.accessToken);
+      const { id_token } = response.params;
+      handleSignInSuccess(id_token);
     }
   }, [response]);
 
-  const loadStoredUser = async () => {
-    try {
-      const storedUser = await AsyncStorage.getItem('user');
-      if (storedUser) {
-        setUser(JSON.parse(storedUser));
-      }
-    } catch (error) {
-      console.error('Error loading stored user:', error);
-    } finally {
-      setIsLoading(false);
-    }
-  };
-
-  const handleSignInSuccess = async (accessToken: string | undefined) => {
-    if (!accessToken) return;
+  const handleSignInSuccess = async (idToken: string) => {
+    if (!idToken) return;
 
     try {
-      const response = await fetch('https://www.googleapis.com/userinfo/v2/me', {
-        headers: { Authorization: `Bearer ${accessToken}` },
-      });
-      const userData = await response.json();
+      const credential = GoogleAuthProvider.credential(idToken);
+      const userCredential = await signInWithCredential(firebaseAuth, credential);
+      
+      const userData = {
+        uid: userCredential.user.uid,
+        email: userCredential.user.email,
+        displayName: userCredential.user.displayName,
+        photoURL: userCredential.user.photoURL,
+      };
+      
       await AsyncStorage.setItem('user', JSON.stringify(userData));
       setUser(userData);
     } catch (error) {
-      console.error('Error fetching user info:', error);
+      console.error('Error signing in with Firebase:', error);
     }
   };
 
   const signIn = async () => {
     try {
       const result = await promptAsync();
-      if (result?.type === 'success') {
-        await handleSignInSuccess(result.authentication?.accessToken);
-        // Ensure the WebBrowser session is completed
-        if (Platform.OS !== 'web') {
-          await WebBrowser.dismissAuthSession();
-        }
+  
+      if (Platform.OS !== 'web') {
+        await WebBrowser.dismissAuthSession();
       }
     } catch (error) {
       console.error('Error signing in:', error);
-      // Ensure the WebBrowser session is dismissed even if there's an error
       if (Platform.OS !== 'web') {
         await WebBrowser.dismissAuthSession();
       }
@@ -96,6 +126,7 @@ export const AuthProvider: React.FC<{ children: React.ReactNode }> = ({ children
 
   const signOut = async () => {
     try {
+      await firebaseAuth.signOut();
       await AsyncStorage.removeItem('user');
       setUser(null);
     } catch (error) {
@@ -116,4 +147,16 @@ export const useAuth = () => {
     throw new Error('useAuth must be used within an AuthProvider');
   }
   return context;
+};
+
+export const checkProductLike = async (userId: string, productId: string) => {
+  try {
+    const likesCollection = collection(firestore, 'productLikes');
+    const likeDocRef = doc(likesCollection, `${userId}_${productId}`);
+    const likeDoc = await getDoc(likeDocRef);
+    return { success: true, isLiked: likeDoc.exists() };
+  } catch (error) {
+    console.error('Error checking product like:', error);
+    return { success: false, error };
+  }
 }; 
