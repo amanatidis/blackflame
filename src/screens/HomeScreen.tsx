@@ -102,6 +102,7 @@ const CategorySection = ({ category, onProductPress }: { category: Category; onP
           />
         ))}
       </ScrollView>
+      <View style={[styles.separator, { backgroundColor: colors.border }]} />
     </View>
   );
 };
@@ -235,6 +236,11 @@ const styles = StyleSheet.create({
     ...typography.header,
     marginLeft: spacing.md,
     marginBottom: spacing.sm,
+  },
+  separator: {
+    height: 1,
+    marginHorizontal: spacing.md,
+    marginTop: spacing.md,
   },
   searchWrapper: {
     margin: spacing.md,

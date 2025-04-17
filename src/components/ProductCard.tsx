@@ -1,8 +1,10 @@
-import React from 'react';
+import React, { useState } from 'react';
 import { View, Text, TouchableOpacity, StyleSheet, Image, Platform } from 'react-native';
 import { Product } from '../types';
 import { useTheme } from '../context/ThemeContext';
 import { getThemeColors, spacing, typography } from '../theme/theme';
+import { Heart } from 'react-native-feather';
+import { useAuth } from '../context/AuthContext';
 
 interface ProductCardProps {
   product: Product;
@@ -33,10 +35,17 @@ const brandImages: { [key: string]: any } = {
 export function ProductCard({ product, onPress }: ProductCardProps) {
   const { theme } = useTheme();
   const colors = getThemeColors(theme);
+  const { user } = useAuth();
+  const [isLoved, setIsLoved] = useState(false);
+
+  const handleLovePress = (e: any) => {
+    e.stopPropagation();
+    setIsLoved(!isLoved);
+  };
 
   return (
     <TouchableOpacity 
-      style={[styles.card, { backgroundColor: colors.card }]} 
+      style={[styles.card, { backgroundColor: colors.card, borderColor: colors.border }]} 
       onPress={() => onPress(product)}
       activeOpacity={0.7}
     >
@@ -59,6 +68,20 @@ export function ProductCard({ product, onPress }: ProductCardProps) {
             </TouchableOpacity>
         ))}
         </View>
+        {user && (
+          <TouchableOpacity 
+            style={styles.loveButton}
+            onPress={handleLovePress}
+            activeOpacity={0.7}
+          >
+            <Heart 
+              width={24} 
+              height={24} 
+              color={isLoved ? '#FF3B30' : colors.text} 
+              fill={isLoved ? '#FF3B30' : 'none'}
+            />
+          </TouchableOpacity>
+        )}
       </View>
       <View style={styles.productInfo}>
         <Text style={[styles.productName, { color: colors.text }]} numberOfLines={2}>
@@ -83,6 +106,7 @@ const styles = StyleSheet.create({
     width: 320,
     borderRadius: 16,
     marginHorizontal: spacing.sm,
+    borderWidth: 1,
     ...Platform.select({
       ios: {
         shadowColor: '#000',
@@ -153,5 +177,13 @@ const styles = StyleSheet.create({
     ...typography.caption,
     fontSize: 12,
     fontWeight: '500',
+  },
+  loveButton: {
+    position: 'absolute',
+    top: spacing.sm,
+    right: spacing.sm,
+    padding: spacing.xs,
+    borderRadius: 20,
+    backgroundColor: 'rgba(0, 0, 0, 0.2)',
   },
 });
