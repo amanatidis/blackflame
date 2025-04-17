@@ -8,6 +8,12 @@ import { Platform } from 'react-native';
 import { OAUTH_CONFIG, APP_CONFIG } from '../config/config';
 import { firebaseAuth, firestore } from '../services/firebaseService';
 import { collection, doc, getDoc } from '@firebase/firestore';
+import {
+  GoogleSignin,
+  isErrorWithCode,
+  isSuccessResponse,
+  statusCodes,
+} from '@react-native-google-signin/google-signin';
 
 WebBrowser.maybeCompleteAuthSession();
 
@@ -110,18 +116,21 @@ export const AuthProvider: React.FC<{ children: React.ReactNode }> = ({ children
   };
 
   const signIn = async () => {
-    try {
-      const result = await promptAsync();
+    // try {
+      await GoogleSignin.hasPlayServices({showPlayServicesUpdateDialog: true});
+      const response = await GoogleSignin.signIn();
   
-      if (Platform.OS !== 'web') {
-        await WebBrowser.dismissAuthSession();
-      }
-    } catch (error) {
-      console.error('Error signing in:', error);
-      if (Platform.OS !== 'web') {
-        await WebBrowser.dismissAuthSession();
-      }
-    }
+    //   // const result = await promptAsync();
+  
+    //   if (Platform.OS !== 'web') {
+    //     await WebBrowser.dismissAuthSession();
+    //   }
+    // } catch (error) {
+    //   console.error('Error signing in:', error);
+    //   if (Platform.OS !== 'web') {
+    //     await WebBrowser.dismissAuthSession();
+      // }
+    // }
   };
 
   const signOut = async () => {

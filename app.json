@@ -1,5 +1,15 @@
 {
+  "name": "MyApp",
+  "displayName": "MyApp",
   "expo": {
-    "scheme": "myapp"
+    "newArchEnabled": true,
+    "scheme": "myapp",
+    "plugins": ["@react-native-google-signin/google-signin"],
+    "android": {
+        "googleServicesFile": "./google-services.json"
+    },
+    "ios": {
+      "googleServicesFile": "./GoogleService-Info.plist"
+    }
   }
 }
