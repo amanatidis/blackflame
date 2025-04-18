@@ -5,7 +5,7 @@ export const APP_CONFIG = {
   name: 'Sunlight',
   scheme: Platform.select({
     web: 'http://127.0.0.1:8081',
-    default: 'sunlight'
+    default: 'myapp'
   }),
   version: '1.0.0',
 };

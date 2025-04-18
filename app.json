@@ -4,12 +4,20 @@
   "expo": {
     "newArchEnabled": true,
     "scheme": "myapp",
-    "plugins": ["@react-native-google-signin/google-signin"],
+    "plugins": [
+      "@react-native-google-signin/google-signin"
+    ],
     "android": {
-        "googleServicesFile": "./google-services.json"
+      "googleServicesFile": "./google-services.json",
+      "package": "io.jrcmpr.pension"
     },
     "ios": {
-      "googleServicesFile": "./GoogleService-Info.plist"
+      "bundleIdentifier": "io.jrcmpr.pension"
+    },
+    "extra": {
+      "eas": {
+        "projectId": "c79e35bf-194e-460e-b9a2-f284e3726304"
+      }
     }
   }
 }

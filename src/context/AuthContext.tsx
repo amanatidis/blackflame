@@ -10,10 +10,13 @@ import { firebaseAuth, firestore } from '../services/firebaseService';
 import { collection, doc, getDoc } from '@firebase/firestore';
 import {
   GoogleSignin,
-  isErrorWithCode,
   isSuccessResponse,
-  statusCodes,
 } from '@react-native-google-signin/google-signin';
+
+GoogleSignin.configure({
+  // scopes: ['email'],
+  webClientId: OAUTH_CONFIG.google.clientId,
+});
 
 WebBrowser.maybeCompleteAuthSession();
 
@@ -116,21 +119,18 @@ export const AuthProvider: React.FC<{ children: React.ReactNode }> = ({ children
   };
 
   const signIn = async () => {
-    // try {
-      await GoogleSignin.hasPlayServices({showPlayServicesUpdateDialog: true});
-      const response = await GoogleSignin.signIn();
-  
-    //   // const result = await promptAsync();
-  
-    //   if (Platform.OS !== 'web') {
-    //     await WebBrowser.dismissAuthSession();
-    //   }
-    // } catch (error) {
-    //   console.error('Error signing in:', error);
-    //   if (Platform.OS !== 'web') {
-    //     await WebBrowser.dismissAuthSession();
-      // }
-    // }
+    try {
+      if (Platform.OS === 'android') {
+        await GoogleSignin.hasPlayServices({showPlayServicesUpdateDialog: true});
+        const response = await GoogleSignin.signIn();
+        if (!isSuccessResponse(response)) return;
+        signInWithCredential(firebaseAuth, GoogleAuthProvider.credential(response.data.idToken));    
+      } else {
+        await promptAsync();
+      }
+    } catch (error) {
+      console.error('Error signing in:', error);
+    }
   };
 
   const signOut = async () => {

@@ -6,12 +6,18 @@ To create a react native template run following:
 npx @react-native-community/cli init
 ```
 
+or use `Expo` to create android folder
+
+```sh
+npx expo prebuild --clean
+````
+
 
 ### Android
 
 Make sure your `google-services.json` is in the correct location (`android/app/google-services.json`)
 
-Add following to build android/build.gradle
+Add following to build `android/build.gradle`
 
 ```
 buildscript {
@@ -24,7 +30,7 @@ buildscript {
 
 Add following to `android/app/build.gradle``
 
-````
+```
 
 android {
     ...
@@ -35,9 +41,13 @@ android {
     }
 ...
 }
+
 ...
 apply plugin: 'com.google.gms.google-services'
-````
+```
+
+Add also
+
 
 **Ensure `JAVA` installed**
 
@@ -65,13 +75,22 @@ keytool -genkey -v -keystore debug.keystore -storepass android -alias androiddeb
 ```
 
 
+
 **Build**
+
+
 ```sh
 cd android
 ./gradlew clean
 ./gradlew build
 ```
+or use expo
 
+```sh 
+npm install -g eas-cli
+eas build:configure
+npx expo run:android
+```
 
 **Get SHA-1 fingerprint**
 
